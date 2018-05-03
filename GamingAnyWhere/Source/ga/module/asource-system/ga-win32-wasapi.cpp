@@ -102,6 +102,7 @@ ga_wasapi_init(ga_wasapi_param *wasapi) {
 	HRESULT hr;
 	//
 	hnsRequestedDuration = REQUESTED_DURATION;
+	MessageBox(NULL, "Aa", "aa", NULL);
 	//
 	hr = CoCreateInstance(
 			CLSID_MMDeviceEnumerator, NULL,
