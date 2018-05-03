@@ -23,6 +23,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import org.gaminganywhere.gaclient.util.GAController;
 import org.gaminganywhere.gaclient.util.GAControllerBasic;
+import org.gaminganywhere.gaclient.util.GAControllerCloudGS;
 import org.gaminganywhere.gaclient.util.GAControllerDualPad;
 import org.gaminganywhere.gaclient.util.GAControllerEmpty;
 import org.gaminganywhere.gaclient.util.GAControllerLimbo;
@@ -223,6 +224,8 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
 				controller = new GAControllerPadABXY(this);
 			} else if(cname.equals(GAControllerPSP.getName())) {
 				controller = new GAControllerPSP(this);
+			} else if(cname.equals(GAControllerCloudGS.getName())) {
+				controller = new GAControllerCloudGS(( this ));
 			} else {
 				controller = new GAControllerBasic(this);
 			}
