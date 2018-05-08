@@ -1,0 +1,3 @@
+node-gyp configure
+
+pause
