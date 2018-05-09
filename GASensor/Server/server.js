@@ -1,15 +1,46 @@
-var http = require('http');
-var c_Addon = require('./module/C_Addon');
+var net = require("net");
+var colors = require("colors");
+var requestHandler = require("./requestHandler");
 
-var c_AddonHandler = new c_Addon();
+function start()
+{
+  var server = net.createServer();
 
-var server = http.createServer(function(request, response){
-  response.writeHead(200, {'Content-Type' : 'text/html'});
-  response.end('Node.js Simple Server!!!');
-});
+  server.on("connection", function(socket) {
 
-server.listen(8080, function(){
-    console.log('Server is running');
-    c_AddonHandler.sendMessage();
-    //addonHandler.sendMsg();
-});
+    var remoteAddress = socket.remoteAddress + ":" + socket.remotePort;
+    console.log("new client connection is made %s".green, remoteAddress);
+
+    socket.on("data", function(d) {
+      console.log("Data from %s: %s".cyan, remoteAddress, d);
+
+      try {
+          var json = JSON.parse(d);
+      } catch (e) {
+          console.log("received data is not JSON");
+          return;
+      }
+
+      if (typeof requestHandler.handle[json.header] === 'function') {
+        requestHandler.handle[json.header](socket, json.data);
+      }
+      else {
+        console.log("no request handler found for " + d);
+      }
+    });
+
+    socket.once("close", function() {
+      console.log("Connection from %s closed".yellow, remoteAddress);
+    });
+
+    socket.on("error", function(err) {
+      console.log("Connection %s error: %s".red, remoteAddress, err.message);
+    });
+  });
+
+  server.listen(9000, function(){
+    console.log("server listening to %j", server.address());
+  });
+}
+
+exports.start = start;
