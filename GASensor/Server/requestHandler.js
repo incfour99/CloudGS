@@ -26,6 +26,11 @@ function ReqGAServerInfo(socket, data) {
 }
 
 function ReqShot(socket, data) {
+  var c_Addon = require('./module/C_Addon');
+  var c_AddonHandler = new c_Addon();
+
+  c_AddonHandler.sendMessage();
+
   console.log('ReqShot called ');
 
   var ack = {
