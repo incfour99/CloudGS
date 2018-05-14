@@ -1,0 +1,14 @@
+{
+  "name": "cloud_gs_server",
+  "version": "1.0.0",
+  "description": "cloud_gs_server",
+  "main": "ServerMain.js",
+  "scripts": {
+    "test": "ServerMain.js -test"
+  },
+  "author": "kim0375",
+  "license": "ISC",
+  "dependencies": {
+    "colors": "^1.2.3"
+  }
+}
