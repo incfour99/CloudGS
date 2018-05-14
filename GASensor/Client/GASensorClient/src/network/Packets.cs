@@ -50,7 +50,10 @@ namespace GASensorClient
     class ReqShot : ReqBase
     {
         public float ballSpeed = 0.0f;
-        public float launchAngle = 0.0f;
+        public float ballIncidence = 0.0f;
+        public float ballDir = 0.0f;
+        public float backSpin = 0.0f;
+        public float sideSpin = 0.0f; 
         // 추가 필요
     }
 

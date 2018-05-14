@@ -8,16 +8,22 @@ namespace GASensorClient
 {
     public static class Logger
     {        
-        private static string LogFile = Environment.CurrentDirectory + "\\Log_" + DateTime.Now.ToString("yyyy_MM_dd_hh_mm") + ".txt";        
+        private static string logFile = Environment.CurrentDirectory + "\\Log_" + DateTime.Now.ToString("yyyy_MM_dd_hh_mm_ss") + ".txt";        
         public static bool bShowLogToConsole = true;
 
         public static void WriteLine(string txt)
         {
             try
             {
-                File.AppendAllText(LogFile, DateTime.Now.ToString() + ": " + txt + "\r\n");
-                if (bShowLogToConsole)
-                    Console.WriteLine(txt);
+                using (var fs = new FileStream(logFile, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+                {                    
+                    using (var sr = new StreamWriter(fs))
+                    {
+                        sr.Write(DateTime.Now.ToString() + ": " + txt + "\r\n");
+                        if (bShowLogToConsole)
+                            Console.WriteLine(txt);
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -27,7 +33,7 @@ namespace GASensorClient
 
         public static void DeleteLog()
         {
-            File.Delete(LogFile);
+            File.Delete(logFile);
         }
     }
 }

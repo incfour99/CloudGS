@@ -38,3 +38,6 @@ GamingAnyWhere/Source/ga/vs2010/module-vsource-desktop-d3d/x64/
 GamingAnyWhere/Source/ga/vs2010/module-vsource-desktop-dfm/Debug/
 GamingAnyWhere/Source/ga/vs2010/module-vsource-desktop-dfm/x64/
 GamingAnyWhere/Source/ga/vs2010/x64/
+GASensor/Client/GASensorClient/bin/
+GASensor/Client/GASensorClient/obj/
+GASensor/Client/GASensorClient/publish/

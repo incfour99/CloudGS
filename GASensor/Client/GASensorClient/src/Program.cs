@@ -23,7 +23,8 @@ namespace GASensorClient
                     break;
             }
 
-            Logger.WriteLine("[Main] GASensorClient program is finished. ##");
+            Logger.WriteLine("[Main] GASensorClient program is finished. Press Enter! ##");
+            Console.ReadLine();
         }
     }
 }
