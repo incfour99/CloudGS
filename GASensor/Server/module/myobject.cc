@@ -1,7 +1,7 @@
 #include "myobject.h"
 #include <Windows.h>
 
-#define WM_CUSTOM 0x0099
+#define WM_MSG002  200
 
 using namespace v8;
 
@@ -59,7 +59,26 @@ void MyObject::SendWinMSG(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = Isolate::GetCurrent();
   HandleScope scope(isolate);
 
-  SendMessage(HWND_BROADCAST, WM_CUSTOM, 100, 100);
+  FILE *fp = NULL;
+
+  if ((fp = fopen("C:\\shotdataCD.txt", "w")) != NULL)//쓰기전용
+  {
+	  fprintf(fp, "%f, %f, %f, %f, %f", 1.1f, 1.2f, 1.3f, 1.4f, 1.5f);
+
+	  //fprintf(fp, "%f, %f, %f, %f, %f", args[0]->NumberValue()			// pshotdata.ballspeed
+			//							  , args[1]->NumberValue()		// pshotdata.ballinci
+			//							  , args[2]->NumberValue()		// pshotdata.balldir
+			//							  , args[3]->NumberValue()		// pshotdata.backspin
+			//							  , args[3]->NumberValue());	// pshotdata.sidespin
+
+	  fclose(fp);
+  }
+
+  HWND hwnd = NULL;
+  hwnd = ::FindWindowA((LPCSTR)("MsgWnd"), NULL);  
+  if (hwnd != NULL)
+	  ::SendMessage(hwnd, WM_MSG002, 0, 0);
+
   // MyObject* obj = ObjectWrap::Unwrap<MyObject>(args.Holder());
   // obj->value_ += 1;
   //
