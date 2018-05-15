@@ -61,21 +61,21 @@ void MyObject::SendWinMSG(const FunctionCallbackInfo<Value>& args) {
 
   FILE *fp = NULL;
 
-  if ((fp = fopen("C:\\shotdataCD.txt", "w")) != NULL)//¾²±âÀü¿ë
+  if ((fp = fopen("C:\\shotdataCD.txt", "w")) != NULL)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   {
 	  //fprintf(fp, "%f, %f, %f, %f, %f", 1.1f, 1.2f, 1.3f, 1.4f, 1.5f);
 
-	  fprintf(fp, "%f, %f, %f, %f, %f", args[0]->NumberValue()			// pshotdata.ballspeed
-										  , args[1]->NumberValue()		// pshotdata.ballinci
-										  , args[2]->NumberValue()		// pshotdata.balldir
-										  , args[3]->NumberValue()		// pshotdata.backspin
-										  , args[3]->NumberValue());	// pshotdata.sidespin
+	  fprintf(fp, "%f, %f, %f, %f, %f", args[0]->NumberValue()		// pshotdata.ballspeed
+              										  , args[1]->NumberValue()		// pshotdata.ballinci
+              										  , args[2]->NumberValue()		// pshotdata.balldir
+              										  , args[3]->NumberValue()		// pshotdata.backspin
+              										  , args[4]->NumberValue());	// pshotdata.sidespin
 
 	  fclose(fp);
   }
 
   HWND hwnd = NULL;
-  hwnd = ::FindWindowA((LPCSTR)("MsgWnd"), NULL);  
+  hwnd = ::FindWindowA((LPCSTR)("MsgWnd"), NULL);
   if (hwnd != NULL)
 	  ::SendMessage(hwnd, WM_MSG002, 0, 0);
 
