@@ -107,6 +107,7 @@
     <Compile Include="src\GASensorClient.cs" />
     <Compile Include="src\GALauncher.cs" />
     <Compile Include="src\network\NetManager.cs" />
+    <Compile Include="src\utils\WinAPI.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

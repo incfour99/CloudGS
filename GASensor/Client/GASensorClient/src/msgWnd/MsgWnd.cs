@@ -23,10 +23,10 @@ namespace GASensorClient
             List<int> events = new List<int>();
             events.Add(SENSOR_EVENT);
 
-            msgWnd = new CustomWindow("MsgWnd", OnSignal, events);
+            msgWnd = new CustomWindow("MsgWnd", OnEvent, events);
         }
 
-        private void OnSignal(uint msg, IntPtr wParam, IntPtr lParam)
+        private void OnEvent(uint msg, IntPtr wParam, IntPtr lParam)
         {
             if (msg == SENSOR_EVENT)
             {
@@ -51,7 +51,11 @@ namespace GASensorClient
 
                     if (nums.Length == 5)
                     {
-                        sData.ballSpeed = nums[0];
+                        sData.ballSpeed     = nums[0];
+                        sData.ballIncidence = nums[1];
+                        sData.ballDir       = nums[2];
+                        sData.backSpin      = nums[3];
+                        sData.sideSpin      = nums[4];
                     }
                     else
                     {

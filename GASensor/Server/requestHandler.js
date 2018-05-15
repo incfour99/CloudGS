@@ -9,6 +9,8 @@ function ReqSeverPolicy(socket, data) {
 
     var jsonString = JSON.stringify(ack);
     socket.write(jsonString);
+
+    console.log('AckServerPolicy sended');
 }
 
 function ReqGAServerInfo(socket, data) {
@@ -23,15 +25,28 @@ function ReqGAServerInfo(socket, data) {
 
   var jsonString = JSON.stringify(ack);
   socket.write(jsonString);
+
+  console.log('AckGAServerInfo sended');
 }
 
 function ReqShot(socket, data) {
+  console.log('ReqShot called ');
+
   var c_Addon = require('./module/C_Addon');
   var c_AddonHandler = new c_Addon();
 
-  c_AddonHandler.sendMessage();
+  console.log("c_AddonHandler : " + c_AddonHandler);
+  console.log("c_AddonHandler : " + c_AddonHandler.sendMessage);
 
-  console.log('ReqShot called ');
+  c_AddonHandler.sendMessage(
+    data.ballSpeed,
+    data.ballIncidence,
+    data.ballDir,
+    data.backSpin,
+    data.sideSpin
+  );
+
+  console.log('ReqShot called sendMessage end');
 
   var ack = {
     header : "AckShot",
@@ -40,6 +55,8 @@ function ReqShot(socket, data) {
 
   var jsonString = JSON.stringify(ack);
   socket.write(jsonString);
+
+  console.log('AckShot sended');
 }
 
 var handle = {}; // javascript object has key:value pair.

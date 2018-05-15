@@ -22,7 +22,7 @@ function start()
       }
 
       if (typeof requestHandler.handle[json.header] === 'function') {
-        requestHandler.handle[json.header](socket, json.data);
+        requestHandler.handle[json.header](socket, json);
       }
       else {
         console.log("no request handler found for " + d);
