@@ -63,13 +63,13 @@ void MyObject::SendWinMSG(const FunctionCallbackInfo<Value>& args) {
 
   if ((fp = fopen("C:\\shotdataCD.txt", "w")) != NULL)//쓰기전용
   {
-	  fprintf(fp, "%f, %f, %f, %f, %f", 1.1f, 1.2f, 1.3f, 1.4f, 1.5f);
+	  //fprintf(fp, "%f, %f, %f, %f, %f", 1.1f, 1.2f, 1.3f, 1.4f, 1.5f);
 
-	  //fprintf(fp, "%f, %f, %f, %f, %f", args[0]->NumberValue()			// pshotdata.ballspeed
-			//							  , args[1]->NumberValue()		// pshotdata.ballinci
-			//							  , args[2]->NumberValue()		// pshotdata.balldir
-			//							  , args[3]->NumberValue()		// pshotdata.backspin
-			//							  , args[3]->NumberValue());	// pshotdata.sidespin
+	  fprintf(fp, "%f, %f, %f, %f, %f", args[0]->NumberValue()			// pshotdata.ballspeed
+										  , args[1]->NumberValue()		// pshotdata.ballinci
+										  , args[2]->NumberValue()		// pshotdata.balldir
+										  , args[3]->NumberValue()		// pshotdata.backspin
+										  , args[3]->NumberValue());	// pshotdata.sidespin
 
 	  fclose(fp);
   }
@@ -82,7 +82,7 @@ void MyObject::SendWinMSG(const FunctionCallbackInfo<Value>& args) {
   // MyObject* obj = ObjectWrap::Unwrap<MyObject>(args.Holder());
   // obj->value_ += 1;
   //
-  // args.GetReturnValue().Set(Number::New(isolate, obj->value_));
+  args.GetReturnValue().Set(Number::New(isolate, 0));
 }
 
 // void MyObject::Multiply(const FunctionCallbackInfo<Value>& args) {
