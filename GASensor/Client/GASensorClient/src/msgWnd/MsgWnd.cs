@@ -47,7 +47,7 @@ namespace GASensorClient
                 using (var sr = new StreamReader(fs, Encoding.Default))
                 {
                     string text = sr.ReadToEnd();
-                    int[] nums = text.Split(',').Select(int.Parse).ToArray();
+                    float[] nums = text.Split(',').Select(float.Parse).ToArray();
 
                     if (nums.Length == 5)
                     {
