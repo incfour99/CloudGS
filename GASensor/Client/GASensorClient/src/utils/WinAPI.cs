@@ -57,6 +57,56 @@ namespace NativeMethods
         public static extern IntPtr DispatchMessage(
             [In] ref MSG lpmsg);
 
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct WNDCLASS
+        {
+            public uint style;
+            public IntPtr lpfnWndProc;
+            public int cbClsExtra;
+            public int cbWndExtra;
+            public IntPtr hInstance;
+            public IntPtr hIcon;
+            public IntPtr hCursor;
+            public IntPtr hbrBackground;
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string lpszMenuName;
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string lpszClassName;
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern System.UInt16 RegisterClassW(
+            [In] ref WNDCLASS lpWndClass
+        );
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr CreateWindowExW(
+           UInt32 dwExStyle,
+           [MarshalAs(UnmanagedType.LPWStr)]
+           string lpClassName,
+           [MarshalAs(UnmanagedType.LPWStr)]
+           string lpWindowName,
+           UInt32 dwStyle,
+           Int32 x,
+           Int32 y,
+           Int32 nWidth,
+           Int32 nHeight,
+           IntPtr hWndParent,
+           IntPtr hMenu,
+           IntPtr hInstance,
+           IntPtr lpParam
+        );
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern System.IntPtr DefWindowProcW(
+            IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam
+        );
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool DestroyWindow(
+            IntPtr hWnd
+        );
+
         [StructLayout(LayoutKind.Sequential)]
         public struct MSG
         {

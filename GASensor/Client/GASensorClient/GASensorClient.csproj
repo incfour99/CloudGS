@@ -96,7 +96,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\GASensorClientResHandler.cs" />
-    <Compile Include="src\GASensorClientEvent.cs" />
     <Compile Include="src\msgWnd\CustomWindow.cs" />
     <Compile Include="src\msgWnd\MsgWnd.cs" />
     <Compile Include="src\network\NetUtils.cs" />
