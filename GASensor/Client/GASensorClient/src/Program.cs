@@ -16,15 +16,24 @@ namespace GASensorClient
             GASensorClient gaSensorClient = new GASensorClient();
             gaSensorClient.Start();
 
+            NativeMethods.WinAPI.MSG msg = new NativeMethods.WinAPI.MSG();
             bool runForever = true;
             while (runForever)
             {
-                string message = Console.ReadLine();
-                if (message.Equals("quit"))
-                    break;
+                //string message = Console.ReadLine();
+                //if (message.Equals("quit"))
+                //    break;
 
-                if (message.Length > 0)
-                    HandleCommand(message);
+                //if (message.Length > 0)
+                //    HandleCommand(message);
+                
+                if (NativeMethods.WinAPI.PeekMessage(ref msg, IntPtr.Zero, 0, 0, NativeMethods.WinAPI.PM_REMOVE))
+                {
+                    NativeMethods.WinAPI.TranslateMessage(ref msg);
+                    NativeMethods.WinAPI.DispatchMessage(ref msg);
+                }
+
+                System.Threading.Thread.Sleep(16);
             }
 
             Logger.WriteLine("[Main] GASensorClient program is finished. Press Enter! ##");
@@ -53,9 +62,9 @@ namespace GASensorClient
                         sr.Flush();
                     }
 
-                    IntPtr handle = MessageSender.WinAPI.FindWindow("MsgWnd", null);
+                    IntPtr handle = NativeMethods.WinAPI.FindWindow("MsgWnd", null);
                     if (handle != null)
-                        MessageSender.WinAPI.SendMessage(handle, 200, 0, 0);
+                        NativeMethods.WinAPI.SendMessage(handle, 200, 0, 0);
                 }
                 catch (Exception e)
                 {

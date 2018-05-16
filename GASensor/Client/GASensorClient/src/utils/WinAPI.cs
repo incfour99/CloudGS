@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace MessageSender 
+namespace NativeMethods
 {
     public class WinAPI
     {
         public const Int32 WM_COPYDATA = 0x004A;
+        public const Int32 PM_REMOVE = 0x0001;
+
         public struct COPYDATASTRUCT
         {
             public IntPtr dwData;
@@ -37,5 +39,40 @@ namespace MessageSender
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr FindWindow(string strClassName, string strWindowName);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool PeekMessage(
+            [In] ref MSG lpMsg,
+            IntPtr hwnd,
+            uint wMsgFilterMin,
+            uint wMsgFilterMax,
+            uint wRemoveMsg);
+
+        [DllImport("user32.dll")]
+        public static extern bool TranslateMessage(
+            [In] ref MSG lpMsg);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr DispatchMessage(
+            [In] ref MSG lpmsg);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MSG
+        {
+            public int hwnd;
+            public int message;
+            public int wParam;
+            public int lParam;
+            public int time;
+            public POINTAPI pt;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINTAPI
+        {
+            public int x;
+            public int y;
+        }
     }
 }

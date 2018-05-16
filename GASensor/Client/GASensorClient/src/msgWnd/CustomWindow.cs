@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 namespace GASensorClient
 {
     using WND_PROC_LISTENER_TYPE = Dictionary<WndProcDelegate, List<int>>;
+    using System.Diagnostics;
 
     delegate void WndProcDelegate(uint msg, IntPtr wParam, IntPtr lParam);
 
@@ -25,7 +26,7 @@ namespace GASensorClient
             public IntPtr hIcon;
             public IntPtr hCursor;
             public IntPtr hbrBackground;
-            [System.Runtime.InteropServices.MarshalAs(UnmanagedType.LPWStr)]
+            [MarshalAs(UnmanagedType.LPWStr)]
             public string lpszMenuName;
             [MarshalAs(UnmanagedType.LPWStr)]
             public string lpszClassName;
@@ -39,10 +40,10 @@ namespace GASensorClient
         [DllImport("user32.dll", SetLastError = true)]
         static extern IntPtr CreateWindowExW(
            UInt32 dwExStyle,
-           [MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPWStr)]
-       string lpClassName,
-           [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPWStr)]
-       string lpWindowName,
+           [MarshalAs(UnmanagedType.LPWStr)]
+           string lpClassName,
+           [MarshalAs(UnmanagedType.LPWStr)]
+           string lpWindowName,
            UInt32 dwStyle,
            Int32 x,
            Int32 y,
@@ -110,11 +111,11 @@ namespace GASensorClient
             // Create WNDCLASS
             WNDCLASS wind_class = new WNDCLASS();
             wind_class.lpszClassName = className;
-            wind_class.lpfnWndProc = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(wndProcDelegate);
+            wind_class.lpfnWndProc = Marshal.GetFunctionPointerForDelegate(wndProcDelegate);            
 
             UInt16 class_atom = RegisterClassW(ref wind_class);
 
-            int last_error = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+            int last_error = Marshal.GetLastWin32Error();
 
             if (class_atom == 0 && last_error != ERROR_CLASS_ALREADY_EXISTS)
             {
@@ -137,10 +138,9 @@ namespace GASensorClient
                 IntPtr.Zero
             );
         }
-
-
+        
         private static IntPtr CustomWndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
-        {
+        {   
             foreach (var listener in CustomWindow.eventListeners)
             {
                 foreach (var ev in listener.Value)
