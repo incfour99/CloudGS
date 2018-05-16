@@ -15,7 +15,10 @@ namespace GASensorClient
 
     class NetManager
     {
-        private string HOST = "127.0.0.1";
+        //private string HOST = "127.0.0.1"; // LocalHost
+        private string HOST = "176.32.72.169"; // 일본 도쿄
+        //private string HOST = "34.235.58.175"; // 미국 버지니아
+        
         private int PORT = 9000;
         private const int MAXSIZE = 4096;   /* 4096  */
 
