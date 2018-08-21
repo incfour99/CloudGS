@@ -213,6 +213,27 @@ public class MainActivity extends Activity implements
 		dlg.show();
 		dlg = null;
 	}
+
+	private void profileBluetooth() {
+		Intent intent = null;
+		Profile p = (Profile) spinner_profile.getSelectedItem();
+		HashMap<String,String> ctrl = (HashMap<String,String>) spinner_control.getSelectedItem();
+		if(p == null) {
+			showToast("Please choose a profile");
+			return;
+		}
+		//
+		intent = new Intent(
+				MainActivity.this, BluetoothActivity.class);
+		intent.putExtra("profile", p.title);
+		intent.putExtra("builtinAudio", cb_builtin_audio.isChecked());
+		intent.putExtra("builtinVideo", cb_builtin_video.isChecked());
+		intent.putExtra("portraitMode", cb_portrait_mode.isChecked());
+		intent.putExtra("controller", ctrl.get("name"));
+		intent.putExtra("dropLateVFrame", getDropLateVFrameDelay());
+		intent.putExtra("watchdogTimeout", getWatchdogTimeout());
+		startActivityForResult(intent, 0);
+	}
 	
 	private void profileConnect() {
 		Intent intent = null;
@@ -394,6 +415,9 @@ public class MainActivity extends Activity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		lastSelection = spinner_profile.getSelectedItemPosition();
 		switch(item.getItemId()) {
+		case R.id.action_bluetooth:
+			profileBluetooth();
+			break;
 		case R.id.action_connect:
 			profileConnect();
 			break;
