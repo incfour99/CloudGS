@@ -1,11 +1,8 @@
-package org.gaminganywhere.gaclient;
+package com.golfzon.cloudgs.activity;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,18 +11,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.UUID;
+import com.golfzon.cloudgs.bluetooth.BluetoothService;
 
-import static org.gaminganywhere.gaclient.BluetoothService.MESSAGE_BLUETOOTH_DISABLED;
-import static org.gaminganywhere.gaclient.BluetoothService.MESSAGE_CONNECTED;
-import static org.gaminganywhere.gaclient.BluetoothService.MESSAGE_CONNECTING;
-import static org.gaminganywhere.gaclient.BluetoothService.MESSAGE_DISCONNECTED;
-import static org.gaminganywhere.gaclient.BluetoothService.MESSAGE_READ;
+import org.gaminganywhere.gaclient.R;
+
+import java.lang.ref.WeakReference;
+
+import static com.golfzon.cloudgs.bluetooth.BluetoothService.MESSAGE_BLUETOOTH_DISABLED;
+import static com.golfzon.cloudgs.bluetooth.BluetoothService.MESSAGE_CONNECTED;
+import static com.golfzon.cloudgs.bluetooth.BluetoothService.MESSAGE_CONNECTING;
+import static com.golfzon.cloudgs.bluetooth.BluetoothService.MESSAGE_DISCONNECTED;
+import static com.golfzon.cloudgs.bluetooth.BluetoothService.MESSAGE_READ;
 
 public class BluetoothActivity extends Activity {
     public final static int REQUEST_ENABLE_BT = 1;
@@ -34,30 +30,24 @@ public class BluetoothActivity extends Activity {
     private TextView m_txtConnStatus;
     private Button m_btnCheckBluetooth;
 
-    private BluetoothService m_bluetoothService;
+    private final BLTHandler m_bltHandler = new BLTHandler(this);
 
-    private final Handler m_handler = new Handler() {
+    // 핸들러 객체 만들기
+    private static class BLTHandler extends Handler {
+        private final WeakReference<BluetoothActivity> mActivity;
+        public BLTHandler(BluetoothActivity activity) {
+            mActivity = new WeakReference<BluetoothActivity>(activity);
+        }
+
         @Override
         public void handleMessage(Message msg) {
-            super.handleMessage(msg);
+            BluetoothActivity activity = mActivity.get();
+            if (activity != null) {
 
-            switch (msg.what) {
-                case MESSAGE_READ:
-                    break;
-                case MESSAGE_CONNECTED:
-                case MESSAGE_CONNECTING:
-                case MESSAGE_DISCONNECTED:
-                    UpdateUI();
-                    break;
-                case MESSAGE_BLUETOOTH_DISABLED:
-                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-                    break;
-                default:
-                    break;
+                activity.handleMessage(msg);
             }
         }
-    };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +61,7 @@ public class BluetoothActivity extends Activity {
         SetEventListeners();
 
         BluetoothService blt = BluetoothService.getInstance();
-        blt.SetHandler(m_handler);
+        blt.SetHandler(m_bltHandler);
         blt.ConnectToPairedDevice();
     }
 
@@ -98,10 +88,6 @@ public class BluetoothActivity extends Activity {
         }
     }
 
-    private void onConnectionLost() {
-        UpdateUI();
-    }
-
     private void UpdateUI() {
         BluetoothService blt = BluetoothService.getInstance();
         switch(blt.getState())
@@ -120,6 +106,25 @@ public class BluetoothActivity extends Activity {
                 m_txtConnStatus.setText(R.string.connecting);
                 m_btnCheckBluetooth.setEnabled(false);
 
+                break;
+        }
+    }
+
+    // Handler 에서 호출하는 함수
+    private void handleMessage(Message msg) {
+        switch (msg.what) {
+            case MESSAGE_READ:
+                break;
+            case MESSAGE_CONNECTED:
+            case MESSAGE_CONNECTING:
+            case MESSAGE_DISCONNECTED:
+                UpdateUI();
+                break;
+            case MESSAGE_BLUETOOTH_DISABLED:
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                break;
+            default:
                 break;
         }
     }

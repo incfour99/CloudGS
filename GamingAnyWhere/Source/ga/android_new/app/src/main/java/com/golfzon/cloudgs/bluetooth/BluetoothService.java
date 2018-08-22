@@ -1,6 +1,5 @@
-package org.gaminganywhere.gaclient;
+package com.golfzon.cloudgs.bluetooth;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -8,9 +7,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.golfzon.cloudgs.bluetooth.hardware.BluetoothSWT;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -35,35 +37,28 @@ public class BluetoothService {
     private BluetoothDevice m_bluetoothDevice;
 
     private ArrayList<String> PairedDeviceNames = new ArrayList<String>();
-    private final static String CADDY_TALK_NAME = "SwingTalk";  // 임시
+
+    private BluetoothSWT m_bluetoothSWT;
 
     private Handler m_exHandler;
-    private Handler m_inHandler = new Handler() {
+    private final BLTSHandler m_inHandler = new BLTSHandler(this );
+    // 핸들러 객체 만들기
+    private static class BLTSHandler extends Handler {
+        private final WeakReference<BluetoothService> m_refs;
+        public BLTSHandler(BluetoothService obj) {
+            m_refs = new WeakReference<BluetoothService>(obj);
+        }
+
         @Override
         public void handleMessage(Message msg) {
-            Log.d("ga_log", "MESSAGE : " + msg.what);
-            switch (msg.what) {
-                case MESSAGE_READ:
-                    break;
-                case MESSAGE_CONNECTED:
-                    setState(BLT_STATE_CONNECTED);
-                    m_bluetoothConnSocket = (BluetoothSocket)msg.obj;
-                    ConnectedThread thread = new ConnectedThread(m_bluetoothConnSocket);
-                    thread.start();
-                    break;
-                case MESSAGE_DISCONNECTED:
-                    setState(BLT_STATE_DISCONNECTED);
-                    break;
-                default:
-                    break;
-            }
-
-            m_exHandler.obtainMessage(msg.what).sendToTarget();
+            BluetoothService obj = m_refs.get();
+            if (obj != null) obj.handleMessage(msg);
         }
-    };
+    }
 
+    // Singleton interface
     private static BluetoothService instance;
-    public static final BluetoothService getInstance() {
+    public synchronized static final BluetoothService getInstance() {
         if (instance == null) {
             instance = new BluetoothService();
         }
@@ -77,6 +72,8 @@ public class BluetoothService {
         if (m_bluetoothAdapter == null) {
             Log.d("ga_log","device does not support bluetooth.");
         }
+
+        m_bluetoothSWT = new BluetoothSWT();
     }
 
     public void SetHandler(Handler handle) {
@@ -254,7 +251,8 @@ public class BluetoothService {
                 PairedDeviceNames.add(device.getName());
                 Log.d("ga_log", "PairedDevice : " + device.getName());
 
-                if(deviceName.equals(CADDY_TALK_NAME)) {
+                String currDeviceName = m_bluetoothSWT.GetDeviceName();
+                if(deviceName.equals(currDeviceName)) {
                     m_bluetoothDevice = device;
                     ConnectThread thread = new ConnectThread(device);
                     thread.start();
@@ -264,5 +262,48 @@ public class BluetoothService {
                 }
             }
         }
+    }
+
+    private void SendReadySignal() {
+        try {
+            String startSig = m_bluetoothSWT.GetStartEndSig();
+
+            OutputStream oStream = m_bluetoothConnSocket.getOutputStream();
+            oStream.write(startSig.getBytes());
+
+            Log.d("ga_log", "SendReadySignal signal sended : " + startSig);
+        } catch (Exception e) {
+            Log.d("ga_log", "SendReadySignal Exception : " + e.getMessage());
+        }
+    }
+
+    // Handler 에서 호출하는 함수
+    private void handleMessage(Message msg) {
+        switch (msg.what) {
+            case MESSAGE_READ:
+                m_bluetoothSWT.ProcessData((byte[])msg.obj, msg.arg1);
+                break;
+            case MESSAGE_CONNECTED:
+                Log.d("ga_log", "MESSAGE : " + msg.what);
+
+                setState(BLT_STATE_CONNECTED);
+                m_bluetoothConnSocket = (BluetoothSocket)msg.obj;
+
+                SendReadySignal();
+
+                ConnectedThread thread = new ConnectedThread(m_bluetoothConnSocket);
+                thread.start();
+                break;
+            case MESSAGE_DISCONNECTED:
+                Log.d("ga_log", "MESSAGE : " + msg.what);
+
+                setState(BLT_STATE_DISCONNECTED);
+                break;
+            default:
+                Log.d("ga_log", "MESSAGE : " + msg.what);
+                break;
+        }
+
+        m_exHandler.obtainMessage(msg.what).sendToTarget();
     }
 }

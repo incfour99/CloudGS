@@ -36,7 +36,7 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_player"
             android:theme="@style/FullscreenTheme"></activity>
-        <activity android:name=".BluetoothActivity"></activity>
+        <activity android:name="com.golfzon.cloudgs.activity.BluetoothActivity"></activity>
     </application>
 
 </manifest>
