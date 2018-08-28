@@ -1,10 +1,12 @@
-package com.golfzon.cloudgs.bluetooth.hardware;
+package com.golfzon.cloudgs.bluetooth.hardware.device;
 
 import android.util.Log;
 
-public class BluetoothSWT {
+import com.golfzon.cloudgs.bluetooth.hardware.HardwareInterface;
 
-    private final static String DEVICE_NAME = "BluetoothSWT";
+public class BluetoothSWT implements HardwareInterface {
+
+    private final static String DEVICE_NAME = "SwingTalk";
     private final static String SENSOR_SIGNAL = "#or";
     private final static int SENSOR_DATA_MIN_SIZE = 17; // 17 byte
     private static short m_index = 0;
@@ -16,17 +18,23 @@ public class BluetoothSWT {
     private int m_impactCheckN = 0;
     private boolean m_bigData_n = false;
 
+    @Override
     public String GetDeviceName() {
         return DEVICE_NAME;
     }
+
+    @Override
     public String GetStartEndSig() {
         return SENSOR_SIGNAL;
     }
 
     // THOR 프로젝트에서 가져옴. 하드코딩된 수치값들이 있으나 아직 해석 못 함
-    public void ProcessData(byte[] buffer, int bytes) {
+    @Override
+    public boolean ProcRawData(byte[] buffer, int bytes) {
         if(SENSOR_DATA_MIN_SIZE >= bytes)
-            return;
+            return false;
+
+        boolean bShot = false;
 
         double DTime = 0.;
         double DGyroX = 0, DGyroY = 0, DGyroZ = 0;
@@ -87,6 +95,8 @@ public class BluetoothSWT {
                     Log.d("ga_log", "DTime : " + DTime +
                             " SAccX : " + SAccX + " SAccY : " + SAccY + " SAccZ : " + SAccZ +
                             " SGyroX : " + SGyroX + " SGyroY : " + SGyroY + " SGyroZ : " + SGyroZ );
+
+                    bShot = true;
                 }
 
                 m_index++;
@@ -110,5 +120,7 @@ public class BluetoothSWT {
                 n_num++;
             }
         }
+
+        return bShot;
     }
 }

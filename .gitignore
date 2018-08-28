@@ -5,6 +5,7 @@ GamingAnyWhere/Source/ga/android_new/app/build/
 GamingAnyWhere/Source/ga/android_new/app/src/main/obj/
 GamingAnyWhere/Source/ga/android_new/build/
 *.sdf
+*.suo
 GamingAnyWhere/Source/ga/vs2010/Debug/
 GamingAnyWhere/Source/ga/vs2010/ga-client/Debug/
 GamingAnyWhere/Source/ga/vs2010/ga-client/x64/
@@ -43,4 +44,5 @@ GamingAnyWhere/Source/ga/vs2010/x64/
 GASensor/Client/GASensorClient/bin/
 GASensor/Client/GASensorClient/obj/
 GASensor/Client/GASensorClient/publish/
+GASensor/Server/log
 GamingAnyWhere/Source/ga/android_new/local.properties

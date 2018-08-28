@@ -7,7 +7,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.golfzon.cloudgs.bluetooth.hardware.BluetoothSWT;
+import com.golfzon.cloudgs.bluetooth.hardware.HardwareManager;
+import com.golfzon.cloudgs.network.Packets;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,19 +19,20 @@ import java.util.Set;
 import java.util.UUID;
 
 public class BluetoothService {
-    public static final int BLT_STATE_DISCONNECTED = 0;
-    public static final int BLT_STATE_CONNECTED = 1;
-    public static final int BLT_STATE_CONNECTING = 2;
+    public static final int BLT_DISCONNECTED = 0;
+    public static final int BLT_CONNECTED = 1;
+    public static final int BLT_CONNECTING = 2;
 
-    private static int m_state = BLT_STATE_DISCONNECTED;
+    private static int m_state = BLT_DISCONNECTED;
 
     private static final UUID UUID_SPP = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-    public static final int MESSAGE_READ = 0;
-    public static final int MESSAGE_CONNECTED = 1;
-    public static final int MESSAGE_CONNECTING = 2;
-    public static final int MESSAGE_DISCONNECTED = 3;
-    public static final int MESSAGE_BLUETOOTH_DISABLED = 4;
+    public static final int BLT_EVENT_READ = 0;
+    public static final int BLT_EVENT_CONNECTED = 1;
+    public static final int BLT_EVENT_CONNECTING = 2;
+    public static final int BLT_EVENT_DISCONNECTED = 3;
+    public static final int BLT_EVENT_DISABLED = 4;
+    public static final int BLT_EVENT_GAME_SHOT = 5;
 
     private BluetoothAdapter m_bluetoothAdapter;
     private BluetoothSocket m_bluetoothConnSocket;
@@ -38,9 +40,7 @@ public class BluetoothService {
 
     private ArrayList<String> PairedDeviceNames = new ArrayList<String>();
 
-    private BluetoothSWT m_bluetoothSWT;
-
-    private Handler m_exHandler;
+    private ArrayList<Handler> m_exHandlers = new ArrayList<Handler>();
     private final BLTSHandler m_inHandler = new BLTSHandler(this );
     // 핸들러 객체 만들기
     private static class BLTSHandler extends Handler {
@@ -58,7 +58,7 @@ public class BluetoothService {
 
     // Singleton interface
     private static BluetoothService instance;
-    public synchronized static final BluetoothService getInstance() {
+    public synchronized static final BluetoothService Instance() {
         if (instance == null) {
             instance = new BluetoothService();
         }
@@ -72,22 +72,24 @@ public class BluetoothService {
         if (m_bluetoothAdapter == null) {
             Log.d("ga_log","device does not support bluetooth.");
         }
-
-        m_bluetoothSWT = new BluetoothSWT();
     }
 
-    public void SetHandler(Handler handle) {
-        m_exHandler = handle;
+    public void AddHandler(Handler handle) {
+        m_exHandlers.add(handle);
+    }
+
+    public void RemoveHandler(Handler handle) {
+        m_exHandlers.remove(handle);
     }
 
     // Bluetooth 상태 set
-    private synchronized void setState(int state) {
+    private synchronized void SetState(int state) {
         Log.d("ga_log", "setState() " + m_state + " -> " + state);
         m_state = state;
     }
 
     // Bluetooth 상태 get
-    public synchronized int getState() {
+    public synchronized int GetState() {
         return m_state;
     }
 
@@ -146,9 +148,9 @@ public class BluetoothService {
 
         private void manageConnectedSocket(BluetoothSocket socket) {
             if(socket.isConnected())
-                m_inHandler.obtainMessage(MESSAGE_CONNECTED, socket).sendToTarget();
+                m_inHandler.obtainMessage(BLT_EVENT_CONNECTED, socket).sendToTarget();
             else
-                m_inHandler.obtainMessage(MESSAGE_DISCONNECTED).sendToTarget();
+                m_inHandler.obtainMessage(BLT_EVENT_DISCONNECTED).sendToTarget();
         }
 
     }
@@ -186,24 +188,24 @@ public class BluetoothService {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
                     // Send the obtained bytes to the UI activity
-                    m_inHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
+                    m_inHandler.obtainMessage(BLT_EVENT_READ, bytes, -1, buffer)
                             .sendToTarget();
                 } catch (IOException e) {
-                    m_inHandler.obtainMessage(MESSAGE_DISCONNECTED).sendToTarget();
-                    Log.d("ga_log", "ConnectedThread connection lost");
+                    m_inHandler.obtainMessage(BLT_EVENT_DISCONNECTED).sendToTarget();
+                    Log.d("ga_log", "ConnectedThread connection lost. " + e.getMessage());
                     break;
                 }
             }
         }
 
-        /* Call this from the main activity to send data to the remote device */
+        /* Call this from the menu_main activity to send data to the remote device */
         public void write(byte[] bytes) {
             try {
                 mmOutStream.write(bytes);
             } catch (IOException e) { }
         }
 
-        /* Call this from the main activity to shutdown the connection */
+        /* Call this from the menu_main activity to shutdown the connection */
         public void cancel() {
             try {
                 mmSocket.close();
@@ -225,7 +227,7 @@ public class BluetoothService {
 
         if (!m_bluetoothAdapter.isEnabled()) {
             Log.d("ga_log", "bluetooth is disabled.");
-            m_inHandler.obtainMessage(MESSAGE_BLUETOOTH_DISABLED).sendToTarget();
+            m_inHandler.obtainMessage(BLT_EVENT_DISABLED).sendToTarget();
             return;
         }
         else {
@@ -234,7 +236,7 @@ public class BluetoothService {
 
         if(m_bluetoothConnSocket != null && m_bluetoothConnSocket.isConnected()) {
             Log.d("ga_log", "already connected ");
-            m_inHandler.obtainMessage(MESSAGE_CONNECTED, m_bluetoothConnSocket).sendToTarget();
+            m_inHandler.obtainMessage(BLT_EVENT_CONNECTED, m_bluetoothConnSocket).sendToTarget();
             return;
         }
 
@@ -251,22 +253,23 @@ public class BluetoothService {
                 PairedDeviceNames.add(device.getName());
                 Log.d("ga_log", "PairedDevice : " + device.getName());
 
-                String currDeviceName = m_bluetoothSWT.GetDeviceName();
+                String currDeviceName = HardwareManager.Instance().GetDeviceName();
+                Log.d("ga_log", "Set Device : " + currDeviceName);
                 if(deviceName.equals(currDeviceName)) {
                     m_bluetoothDevice = device;
                     ConnectThread thread = new ConnectThread(device);
                     thread.start();
 
-                    setState(BLT_STATE_CONNECTING);
-                    m_inHandler.obtainMessage(MESSAGE_CONNECTING).sendToTarget();
+                    SetState(BLT_CONNECTING);
+                    m_inHandler.obtainMessage(BLT_EVENT_CONNECTING).sendToTarget();
                 }
             }
         }
     }
 
-    private void SendReadySignal() {
+    public void SendReadySignal() {
         try {
-            String startSig = m_bluetoothSWT.GetStartEndSig();
+            String startSig = HardwareManager.Instance().GetStartEndSig();
 
             OutputStream oStream = m_bluetoothConnSocket.getOutputStream();
             oStream.write(startSig.getBytes());
@@ -279,31 +282,48 @@ public class BluetoothService {
 
     // Handler 에서 호출하는 함수
     private void handleMessage(Message msg) {
+        boolean bSendMsg = true;
+
         switch (msg.what) {
-            case MESSAGE_READ:
-                m_bluetoothSWT.ProcessData((byte[])msg.obj, msg.arg1);
+            case BLT_EVENT_READ:
+                bSendMsg = HardwareManager.Instance().ProcRawData((byte[])msg.obj, msg.arg1);
+                if(bSendMsg) {
+                    msg.what = BLT_EVENT_GAME_SHOT;
+                }
                 break;
-            case MESSAGE_CONNECTED:
-                Log.d("ga_log", "MESSAGE : " + msg.what);
+            case BLT_EVENT_CONNECTED:
+                Log.d("ga_log", "BLT_EVENT_CONNECTED MESSAGE : " + msg.what);
 
-                setState(BLT_STATE_CONNECTED);
+                SetState(BLT_CONNECTED);
                 m_bluetoothConnSocket = (BluetoothSocket)msg.obj;
-
-                SendReadySignal();
 
                 ConnectedThread thread = new ConnectedThread(m_bluetoothConnSocket);
                 thread.start();
                 break;
-            case MESSAGE_DISCONNECTED:
-                Log.d("ga_log", "MESSAGE : " + msg.what);
+            case BLT_EVENT_DISCONNECTED:
+                Log.d("ga_log", "BLT_EVENT_DISCONNECTED MESSAGE : " + msg.what);
 
-                setState(BLT_STATE_DISCONNECTED);
+                try {
+                    m_bluetoothConnSocket.close();
+                    m_bluetoothDevice = null;
+                } catch (Exception e) {
+                    Log.d("ga_log", "BLT_EVENT_CONNECTED Failed to close : " + e.getMessage());
+                }
+
+
+                SetState(BLT_DISCONNECTED);
                 break;
             default:
                 Log.d("ga_log", "MESSAGE : " + msg.what);
                 break;
         }
 
-        m_exHandler.obtainMessage(msg.what).sendToTarget();
+        if(!bSendMsg)
+            return;
+
+        for(Handler h : m_exHandlers) {
+            if(h != null)
+                h.obtainMessage(msg.what).sendToTarget();
+        }
     }
 }

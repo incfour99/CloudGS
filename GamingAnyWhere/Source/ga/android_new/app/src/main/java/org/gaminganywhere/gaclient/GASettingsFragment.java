@@ -33,7 +33,7 @@ import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.widget.Toast;
 
-public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
+public class GASettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
 
 	private String current_profile = null;
 	private Context context = null;
@@ -193,8 +193,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 	}
 
 	@Override
-	public void onSharedPreferenceChanged(SharedPreferences spref,
-			String key) {
+	public void onSharedPreferenceChanged(SharedPreferences spref, String key) {
 		Preference p = null;
 		if((p = findPreference(key)) == null)
 			return;

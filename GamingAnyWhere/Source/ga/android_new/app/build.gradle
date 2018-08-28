@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-
 android {
     compileSdkVersion 16
     buildToolsVersion "27.0.3"
@@ -25,4 +24,8 @@ android {
             path 'src/main/jni/Android.mk'
         }
     }
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.8.5'
 }

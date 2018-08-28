@@ -30,9 +30,9 @@ import android.preference.PreferenceScreen;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 
-public class SettingsActivity extends PreferenceActivity {
+public class GAProfileEditActivity extends PreferenceActivity {
 
-	private SettingsFragment fragment = null;
+	private GASettingsFragment fragment = null;
 	private String currProfile = null;
 	
 	public void showToast(String s) {
@@ -52,11 +52,11 @@ public class SettingsActivity extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		Intent intent = getIntent();
 		currProfile = intent.getStringExtra("profile");
-		//SettingsFragment fragment = null;
+		//GASettingsFragment fragment = null;
 		super.onCreate(savedInstanceState);
-		// pass profile key to SettingsFragment
+		// pass profile key to GASettingsFragment
 		if(fragment == null)
-			fragment = new SettingsFragment();
+			fragment = new GASettingsFragment();
 		fragment.setContext(getBaseContext());
 		fragment.setProfile(currProfile);
 		// we don't have a preference header

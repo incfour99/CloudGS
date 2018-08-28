@@ -52,7 +52,15 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-public class PlayerActivity extends Activity implements SurfaceHolder.Callback, GLSurfaceView.Renderer {
+import com.golfzon.cloudgs.bluetooth.BluetoothService;
+import com.golfzon.cloudgs.network.NetworkManager;
+import com.golfzon.cloudgs.network.Packets;
+
+import java.lang.ref.WeakReference;
+
+import static com.golfzon.cloudgs.bluetooth.BluetoothService.BLT_EVENT_GAME_SHOT;
+
+public class GAPlayerActivity extends Activity implements SurfaceHolder.Callback, GLSurfaceView.Renderer {
 
 	private PowerManager.WakeLock mWakeLock = null;
 	private GAClient client = null;
@@ -165,6 +173,10 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
+
+		// Start Game
+		BluetoothService.Instance().AddHandler(m_bltHandler);
+		BluetoothService.Instance().SendReadySignal();
 		
 		Intent intent = getIntent();
 		builtinVideo = intent.getBooleanExtra("builtinVideo", true);
@@ -325,4 +337,41 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		Log.d("ga_log", "GL surface created.");
 	}
+
+	// 핸들러 객체 만들기
+	private final BLTHandler m_bltHandler = new BLTHandler(this);
+	private static class BLTHandler extends Handler {
+		private final WeakReference<GAPlayerActivity> mActivity;
+		public BLTHandler(GAPlayerActivity activity) {
+			mActivity = new WeakReference<GAPlayerActivity>(activity);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			GAPlayerActivity activity = mActivity.get();
+			if (activity != null) {
+				activity.handleBltMessage(msg);
+			}
+		}
+	}
+
+	// Handler 에서 호출하는 함수
+	private void handleBltMessage(Message msg) {
+		Log.d("ga_log", "GAPlayerActivity handleBltMessage: " + msg.what);
+
+		switch (msg.what) {
+			case BLT_EVENT_GAME_SHOT:
+				// TODO : this is test data.
+				Packets.ReqShot req = new Packets.ReqShot();
+				req.ballSpeed = 40;
+				req.ballIncidence = 15;
+				req.backSpin = 2000;
+				req.ballDir = 0;
+				req.sideSpin = 0;
+				NetworkManager.Instance().Send(req);
+				break;
+		}
+
+	}
+
 }

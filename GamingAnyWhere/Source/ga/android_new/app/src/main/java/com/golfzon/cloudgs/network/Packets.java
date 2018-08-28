@@ -1,49 +1,53 @@
 package com.golfzon.cloudgs.network;
 
+import com.google.gson.Gson;
+
+import java.io.Serializable;
+
 public class Packets {
-    public class PacketBase
+    public static class PacketBase
     {
         public String header = "invald";
 
         public PacketBase()
         {
-            header = this.getClass().getName();
+            header = this.getClass().getSimpleName();
         }
     }
 
-    public class ReqBase extends PacketBase
+    public static class ReqBase extends PacketBase
     {
         public int clientVersion = 0;
         public int packetVersion = 0;
     }
 
-    public class AckBase extends PacketBase
+    public static class AckBase extends PacketBase
     {
         public int result = 0;
     }
 
-    public class ReqSeverPolicy extends ReqBase
+    public static class ReqSeverPolicy extends ReqBase
     {
         public int dummy = 0;
     }
 
-    public class AckServerPolicy extends AckBase
+    public static class AckServerPolicy extends AckBase
     {
         public float expireTime = 0.0f;
     }
 
-    public class ReqGAServerInfo extends ReqBase
+    public static class ReqGAServerInfo extends ReqBase
     {
         public int dummy = 0;
     }
 
-    public class AckGAServerInfo extends AckBase
+    public static class AckGAServerInfo extends AckBase
     {
         public String ip = "";
         public String port = "";
     }
 
-    public class ReqShot extends ReqBase
+    public static class ReqShot extends ReqBase
     {
         public float ballSpeed = 0.0f;
         public float ballIncidence = 0.0f;
@@ -53,7 +57,7 @@ public class Packets {
         // 추가 필요
     }
 
-    public class AckShot extends AckBase
+    public static class AckShot extends AckBase
     {
     }
 }

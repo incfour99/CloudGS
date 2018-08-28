@@ -409,7 +409,7 @@ public class GAClient {
 	public void showToast(String s) {
 		if(handler != null) {
 			Message m = new Message();
-			m.what = PlayerActivity.MSG_SHOWTOAST;
+			m.what = GAPlayerActivity.MSG_SHOWTOAST;
 			m.obj = s;
 			handler.sendMessage(m);
 		}
@@ -418,7 +418,7 @@ public class GAClient {
 	public void goBack(int exitCode) {
 		if(handler != null) {
 			Message m = new Message();
-			m.what = PlayerActivity.MSG_QUIT;
+			m.what = GAPlayerActivity.MSG_QUIT;
 			m.arg1 = -1;
 			handler.sendMessage(m);
 		}
