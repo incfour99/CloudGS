@@ -1,5 +1,7 @@
+var winston = require('winston');
+
 function ReqSeverPolicy(socket, data) {
-    console.log('ReqSeverPolicy called ');
+    winston.info('ReqSeverPolicy called ');
 
     var ack = {
       header : "AckServerPolicy",
@@ -7,14 +9,14 @@ function ReqSeverPolicy(socket, data) {
       result : 1
     };
 
-    var jsonString = JSON.stringify(ack);
+    var jsonString = JSON.stringify(ack) + '\r\n';
     socket.write(jsonString);
 
-    console.log('AckServerPolicy sended');
+    winston.info('AckServerPolicy sended');
 }
 
 function ReqGAServerInfo(socket, data) {
-  console.log('ReqGAServerInfo called ');
+  winston.info('ReqGAServerInfo called ');
 
   var ack = {
     header : "AckGAServerInfo",
@@ -23,20 +25,20 @@ function ReqGAServerInfo(socket, data) {
     result : 1
   };
 
-  var jsonString = JSON.stringify(ack);
+  var jsonString = JSON.stringify(ack) + '\r\n';
   socket.write(jsonString);
 
-  console.log('AckGAServerInfo sended');
+  winston.info('AckGAServerInfo sended');
 }
 
 function ReqShot(socket, data) {
-  console.log('ReqShot called ');
+  winston.info('ReqShot called ');
 
   var c_Addon = require('./module/C_Addon');
   var c_AddonHandler = new c_Addon();
 
-  console.log("c_AddonHandler : " + c_AddonHandler);
-  console.log("c_AddonHandler : " + c_AddonHandler.sendMessage);
+  winston.info("c_AddonHandler : " + c_AddonHandler);
+  winston.info("c_AddonHandler : " + c_AddonHandler.sendMessage);
 
   c_AddonHandler.sendMessage(
     data.ballSpeed,
@@ -46,17 +48,17 @@ function ReqShot(socket, data) {
     data.sideSpin
   );
 
-  console.log('ReqShot called sendMessage end');
+  winston.info('ReqShot called sendMessage end');
 
   var ack = {
     header : "AckShot",
     result : 1
   };
 
-  var jsonString = JSON.stringify(ack);
+  var jsonString = JSON.stringify(ack) + '\r\n';
   socket.write(jsonString);
 
-  console.log('AckShot sended');
+  winston.info('AckShot sended');
 }
 
 var handle = {}; // javascript object has key:value pair.

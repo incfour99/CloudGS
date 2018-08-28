@@ -1,3 +1,4 @@
+var winston = require('winston');
 var net = require("net");
 var colors = require("colors");
 var requestHandler = require("./requestHandler");
@@ -9,37 +10,49 @@ function start()
   server.on("connection", function(socket) {
 
     var remoteAddress = socket.remoteAddress + ":" + socket.remotePort;
-    console.log("new client connection is made %s".green, remoteAddress);
+    winston.info("new client connection is made " + remoteAddress);
 
     socket.on("data", function(d) {
-      console.log("Data from %s: %s".cyan, remoteAddress, d);
+      winston.info("Data from " + remoteAddress + " " + d);
+	  
+	  if(d == null || d == undefined) {
+		  winston.error("Data is invalid.");
+		  return;
+	  }
 
       try {
           var json = JSON.parse(d);
+		  winston.info('parsed json : ' + json);
       } catch (e) {
-          console.log("received data is not JSON");
+          winston.error("received data is not JSON");
           return;
       }
+	  
+	  if(json.header == undefined) {
+		  winston.error("header is undefined. " + d);
+		  return;
+	  }
 
       if (typeof requestHandler.handle[json.header] === 'function') {
         requestHandler.handle[json.header](socket, json);
       }
       else {
-        console.log("no request handler found for " + d);
+        winston.error("no request handler found for " + d);
       }
     });
 
     socket.once("close", function() {
-      console.log("Connection from %s closed".yellow, remoteAddress);
+      winston.info("Connection from %s closed" + remoteAddress);
     });
 
     socket.on("error", function(err) {
-      console.log("Connection %s error: %s".red, remoteAddress, err.message);
+      winston.error("Connection %s error: %s" + remoteAddress, err.message);
     });
   });
 
   server.listen(9000, function(){
-    console.log("server listening to %j", server.address());
+	addressObj = server.address();  
+    winston.info("server listening to IP : " + addressObj.address + " PORT : " + addressObj.port);
   });
 }
 
