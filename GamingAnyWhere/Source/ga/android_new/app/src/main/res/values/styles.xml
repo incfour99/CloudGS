@@ -35,4 +35,18 @@
 
     <style name="ButtonBarButton" />
 
+    <style name="MainActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
+        <item name="android:background">@color/black_overlay</item>
+    </style>
+
+    <style name="MainActionBarTitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">#ffffff</item>
+    </style>
+
+    <style name="CustomActionBarTheme" parent="@android:style/Theme.Holo">
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:actionBarStyle">@style/MainActionBarStyle</item>
+        <item name="android:titleTextStyle">@style/MainActionBarTitleTextStyle</item>
+    </style>
+
 </resources>
