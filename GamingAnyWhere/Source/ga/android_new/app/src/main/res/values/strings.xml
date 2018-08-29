@@ -35,17 +35,17 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
-    <string name="title_profile_label">Profile : </string>
-    <string name="title_profile_value">None </string>
+    <string name="title_profile_label">PROFILE : </string>
+    <string name="title_profile_value">NONE </string>
 
-    <string name="title_server_label">Server : </string>
+    <string name="title_server_label">SERVER : </string>
 
-    <string name="connStatus">Sensor : </string>
-    <string name="connected">Connected</string>
-    <string name="connecting">Connecting</string>
-    <string name="disconnected">Disconnected</string>
-    <string name="connect">Connect</string>
-    <string name="deviceName">Device : </string>
+    <string name="connStatus">SENSOR : </string>
+    <string name="connected">CONNECTED</string>
+    <string name="connecting">CONNECTING</string>
+    <string name="disconnected">DISCONNECTED</string>
+    <string name="connect">CONNECT</string>
+    <string name="deviceName">DEVICE : </string>
 
     <string name="menu_home">HOME</string>
     <string name="menu_bluetooth">BLUETOOTH</string>

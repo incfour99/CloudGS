@@ -92,7 +92,7 @@
         android:id="@+id/btnStartConnect"
         android:layout_width="150dp"
         android:layout_height="50dp"
-        android:background="@drawable/btn_0_normal"
+        android:background="@drawable/title_connect_btn_selector"
         android:text="@string/connect"
         android:textSize="20sp" />
 

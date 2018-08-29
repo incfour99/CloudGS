@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/btn_0_normal"
+        android:color="#FFFFFF"
+        android:state_pressed="false"
+        android:state_enabled="true"/>
+    <item android:drawable="@drawable/btn_0_pressed"
+        android:color="#FFFFFF"
+        android:state_pressed="true"
+        android:state_enabled="true"/>
+    <item android:drawable="@drawable/btn_0_disabled"
+        android:state_enabled="false"
+        android:color="#505c6b"/>
+</selector>
