@@ -46,3 +46,9 @@ GASensor/Client/GASensorClient/obj/
 GASensor/Client/GASensorClient/publish/
 GASensor/Server/log
 GamingAnyWhere/Source/ga/android_new/local.properties
+
+GASensorWithRelay/Client/GASensorClient/bin/
+GASensorWithRelay/Client/GASensorClient/obj/
+GASensorWithRelay/Client/GASensorClient/publish/
+GASensorWithRelay/Server/log
+GASensorWithRelay/Relay/log
