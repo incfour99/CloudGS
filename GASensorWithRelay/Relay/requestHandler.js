@@ -1,11 +1,12 @@
 var winston = require('winston');
 
-var clientSocket, serverSocket;
+var clientSocket = [];
+var serverSocket;
 
 function ReqResisterClient(socket, data) {
   winston.info('ReqResisterClient called ');
 
-  clientSocket = socket;
+  clientSocket.push(socket);
 
   var ack = {
     header : "AckResisterClient",
@@ -36,11 +37,6 @@ function ReqResisterServer(socket, data) {
 
 function ReqShot(socket, data) {
   winston.info('ReqShot called ');
-
-  if(socket != clientSocket) {
-    winston.info('ReqShot clientSocket invalid : ' + clientSocket);
-    return;
-  }
 
   var req = {
     header : "ReqShot",

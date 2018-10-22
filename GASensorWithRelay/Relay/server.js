@@ -46,7 +46,7 @@ function start()
     });
 
     socket.on("error", function(err) {
-      winston.error("Connection %s error: %s" + remoteAddress, err.message);
+      winston.error("Connection " + remoteAddress + " error: " + err.message);
     });
   });
 
